@@ -35,7 +35,7 @@ func (view *SourceView) Update(frame *client.StoppedFrame) {
 
 		lineInt, err := strconv.Atoi(stackFrame.Result.Frame.FileLine)
 		if err != nil {
-			view.app.LogError(fmt.Sprintf("Error parsing file line from stack frame: %s", stackFrame.Result.Frame.FileLine))
+			view.app.LogError("Error parsing file line from stack frame: %s", stackFrame.Result.Frame.FileLine)
 		}
 		view.CenterView(lineInt)
 	})
@@ -58,7 +58,7 @@ func (view *SourceView) PrettyPrintCode(frame *client.GdbStackFrame) string {
 
 	currentLine, err := strconv.Atoi(frame.FileLine)
 	if err != nil {
-		view.app.LogError(fmt.Sprintf("Error parsing file line from stack frame: %s", frame.FileLine))
+		view.app.LogError("Error parsing file line from stack frame: %s", frame.FileLine)
 		currentLine = -1
 	}
 
