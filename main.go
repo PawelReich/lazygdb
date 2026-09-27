@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/PawelReich/gogdb/client"
 	"github.com/PawelReich/gogdb/tui"
@@ -27,6 +28,7 @@ func main() {
 	diassemblyView := tui.NewDisassemblyView(app)
 	codeView := tui.NewSourceView(app)
 	registersView := tui.NewRegistersView(app)
+	stackView := tui.NewStackView(app)
 
 	go func() {
 		var errorLog string
@@ -49,6 +51,9 @@ func main() {
 				}()
 				go func() {
 					registersView.Update(frame)
+				}()
+				go func() {
+					stackView.Update(frame)
 				}()
 			}
 
@@ -88,7 +93,9 @@ func main() {
 				app.Ui.SetFocus(codeView.Pane)
 			} else if codeView.Pane.HasFocus() {
 				app.Ui.SetFocus(commandPrompt.Pane)
-			} else {
+			} else if commandPrompt.Pane.HasFocus() {
+				app.Ui.SetFocus(stackView.Pane)
+			} else if stackView.Pane.HasFocus() {
 				app.Ui.SetFocus(diassemblyView.Pane)
 			}
 		}
@@ -121,6 +128,10 @@ func main() {
 	// 5. Registers (Middle Right)
 	// Starts at row 1, column 2. Spans 1 row, 1 column.
 	grid.AddItem(registersView.Pane, 1, 2, 1, 1, 0, 0, false)
+
+	// 5. Registers (Middle Right)
+	// Starts at row 2, column 2. Spans 1 row, 1 column.
+	grid.AddItem(stackView.Pane, 2, 2, 1, 1, 0, 0, false)
 
 	var commands []string
 	pflag.StringArrayVarP(&commands, "ex", "e", nil, "Commands to execute")
