@@ -95,6 +95,7 @@ func main() {
 				app.Ui.SetFocus(commandPrompt.Pane)
 			} else if commandPrompt.Pane.HasFocus() {
 				app.Ui.SetFocus(stackView.Pane)
+				return nil
 			} else if stackView.Pane.HasFocus() {
 				app.Ui.SetFocus(diassemblyView.Pane)
 			}
