@@ -141,3 +141,79 @@ func (gdb *GdbClient) GetSymbol(sym string) <-chan AsyncDecodedResult[string] {
 
 	return ch
 }
+
+type GdbStackListFramesEntry struct {
+	Frame GdbStackListFramesFrame `mapstructure:"frame"`
+}
+
+type GdbStackListFramesPayload struct {
+	Stack []GdbStackListFramesEntry `mapstructure:"stack"`
+}
+
+type GdbStackFrameArguments struct {
+	Level string                       `mapstructure:"level"`
+	Args  []GdbStacktraceFrameArgument `mapstructure:"args"`
+}
+
+type GdbStackListArgumentsEntry struct {
+	Frame GdbStackFrameArguments `mapstructure:"frame"`
+}
+
+type GdbStackListArgumentsPayload struct {
+	StackArgs []GdbStackListArgumentsEntry `mapstructure:"stack-args"`
+}
+
+type GdbStacktraceFrameArgument struct {
+	Name  string `mapstructure:"name"`
+	Value string `mapstructure:"value"`
+}
+
+type GdbStackListFramesFrame struct {
+	Level     string                       `mapstructure:"level"`
+	Address   string                       `mapstructure:"addr"`
+	Function  string                       `mapstructure:"func"`
+	FileName  string                       `mapstructure:"file"`
+	FilePath  string                       `mapstructure:"fullname"`
+	FileLine  string                       `mapstructure:"line"`
+	Arch      string                       `mapstructure:"arch"`
+	Arguments []GdbStacktraceFrameArgument `mapstructure:"args"`
+}
+
+func (gdb *GdbClient) GetStacktrace() <-chan AsyncDecodedResult[[]GdbStackListFramesFrame] {
+	ch := make(chan AsyncDecodedResult[[]GdbStackListFramesFrame], 1)
+
+	go func() {
+		defer close(ch)
+
+		framesFut := SendDecodeAsync[GdbStackListFramesPayload](gdb, "stack-list-frames")
+		argsFut := SendDecodeAsync[GdbStackListArgumentsPayload](gdb, "stack-list-arguments", "2")
+
+		frames := <-framesFut
+		args := <-argsFut
+
+		if frames.Error != nil {
+			ch <- AsyncDecodedResult[[]GdbStackListFramesFrame]{Error: frames.Error}
+			return
+		}
+		if args.Error != nil {
+			ch <- AsyncDecodedResult[[]GdbStackListFramesFrame]{Error: args.Error}
+			return
+		}
+
+		argumentsByLevel := make(map[string][]GdbStacktraceFrameArgument, len(args.Result.StackArgs))
+		for _, entry := range args.Result.StackArgs {
+			argumentsByLevel[entry.Frame.Level] = entry.Frame.Args
+		}
+
+		stacktrace := make([]GdbStackListFramesFrame, 0, len(frames.Result.Stack))
+		for _, entry := range frames.Result.Stack {
+			frame := entry.Frame
+			frame.Arguments = argumentsByLevel[frame.Level]
+			stacktrace = append(stacktrace, frame)
+		}
+
+		ch <- AsyncDecodedResult[[]GdbStackListFramesFrame]{Result: stacktrace}
+	}()
+
+	return ch
+}
