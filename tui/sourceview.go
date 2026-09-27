@@ -20,7 +20,7 @@ func NewSourceView(app *GoGdb) *SourceView {
 	return &SourceView{CodeView: NewCodeView(app, "Source")}
 }
 
-func (view *SourceView) Update(frame *client.StoppedFrame) {
+func (view *SourceView) Update(_ *client.StoppedFrame) {
 	fut := view.app.Debugger.GetCurrentStackFrame()
 	view.app.Ui.QueueUpdateDraw(func() {
 		stackFramePayload := <-fut
