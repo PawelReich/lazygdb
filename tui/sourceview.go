@@ -21,52 +21,50 @@ func NewSourceView(app *GoGdb) *SourceView {
 }
 
 func (view *SourceView) Update(frame *client.StoppedFrame) {
-
 	fut := view.app.Debugger.GetCurrentStackFrame()
 	view.app.Ui.QueueUpdateDraw(func() {
-		stackFrame := <-fut
-		if stackFrame.Error != nil {
-			panic(stackFrame.Error)
+		stackFramePayload := <-fut
+		if stackFramePayload.Error != nil {
+			view.app.LogError("Error parsing stack frame payload: %s", stackFramePayload.Error)
+			return
 		}
+		frame := stackFramePayload.Result.Frame
 
-		view.SetTitle(stackFrame.Result.Frame.Function)
-
-		view.Pane.SetText(view.PrettyPrintCode(&stackFrame.Result.Frame))
-
-		lineInt, err := strconv.Atoi(stackFrame.Result.Frame.FileLine)
+		fileLine, err := strconv.Atoi(frame.FileLine)
 		if err != nil {
-			view.app.LogError("Error parsing file line from stack frame: %s", stackFrame.Result.Frame.FileLine)
+			view.app.LogError("Error parsing file line from stack frame: %s", frame.FileLine)
+			fileLine = -1
 		}
-		view.CenterView(lineInt)
+		view.RenderFile(frame.FilePath, fileLine, frame.Function)
 	})
 }
 
-func (view *SourceView) PrettyPrintCode(frame *client.GdbStackFrame) string {
+func (view *SourceView) RenderFile(filePath string, fileLine int, function string) {
+	view.SetTitle(function)
+	view.Pane.SetText(view.PrettyPrintCode(filePath, fileLine))
+	view.CenterView(fileLine)
+}
+
+func (view *SourceView) PrettyPrintCode(filePath string, fileCurrentLine int) string {
 	var sb strings.Builder
 
-	code, err := os.ReadFile(frame.FilePath)
+	code, err := os.ReadFile(filePath)
 	if err != nil {
-		return fmt.Sprintf("[red::b]Could not read file: %s", frame.FilePath)
+		return fmt.Sprintf("[red::b]Could not read file: %s", filePath)
 	}
 	codeString := string(code)
 
-	lexer := lexers.Match(frame.FilePath)
+	lexer := lexers.Match(filePath)
 
 	iterator, err := lexer.Tokenise(nil, codeString)
 	tokens := iterator.Tokens()
 	lines := chroma.SplitTokensIntoLines(tokens)
 
-	currentLine, err := strconv.Atoi(frame.FileLine)
-	if err != nil {
-		view.app.LogError("Error parsing file line from stack frame: %s", frame.FileLine)
-		currentLine = -1
-	}
-
 	totalLines := len(strings.Split(codeString, "\n"))
 	lineCounterWidth := len(strconv.Itoa(totalLines))
 
 	for line, tokens := range lines {
-		if currentLine == line {
+		if fileCurrentLine == line+1 {
 			sb.WriteString("[white::ib]")
 		} else {
 			sb.WriteString("[grey::i]")
