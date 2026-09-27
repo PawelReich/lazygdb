@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/PawelReich/gogdb/client"
@@ -13,6 +14,8 @@ type StackView struct {
 	*View
 
 	Pane *tview.List
+
+	currentStack []client.GdbStackListFramesFrame
 }
 
 func NewStackView(app *GoGdb) *StackView {
@@ -25,7 +28,21 @@ func NewStackView(app *GoGdb) *StackView {
 	list.SetSelectedBackgroundColor(tcell.ColorBlack)
 	list.SetSelectedStyle(tcell.StyleDefault.Bold(true))
 
-	return &StackView{View: NewView(app), Pane: list}
+	view := &StackView{View: NewView(app), Pane: list}
+
+	list.SetChangedFunc(func(index int, mainText, secondaryText string, shortcut rune) {
+		frame := view.currentStack[index]
+
+		fileLine, err := strconv.Atoi(frame.FileLine)
+		if err != nil {
+			view.app.LogError("Error parsing file line from stack frame: %s", frame.FileLine)
+			fileLine = -1
+		}
+
+		app.SourceView.RenderFile(frame.FilePath, fileLine, frame.Function)
+	})
+
+	return view
 }
 
 func (view *StackView) Update(frame *client.StoppedFrame) {
@@ -40,6 +57,7 @@ func (view *StackView) Update(frame *client.StoppedFrame) {
 		return
 	}
 
+	view.currentStack = stacktrace.Result
 	view.Pane.Clear()
 
 	for _, stackFrame := range stacktrace.Result {
