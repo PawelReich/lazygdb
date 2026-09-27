@@ -2,6 +2,7 @@ package main
 
 import (
 	"strings"
+	"sync"
 
 	"github.com/PawelReich/gogdb/client"
 	"github.com/PawelReich/gogdb/tui"
@@ -24,11 +25,19 @@ func main() {
 
 	commandPrompt := tui.NewCommandPrompt(app)
 	app.CommandPrompt = commandPrompt
+
 	diassemblyView := tui.NewDisassemblyView(app)
+	app.Views = append(app.Views, diassemblyView)
+
 	codeView := tui.NewSourceView(app)
 	app.SourceView = codeView
+	app.Views = append(app.Views, codeView)
+
 	registersView := tui.NewRegistersView(app)
+	app.Views = append(app.Views, registersView)
+
 	stackView := tui.NewStackView(app)
+	app.Views = append(app.Views, stackView)
 
 	go func() {
 		var errorLog string
@@ -43,18 +52,17 @@ func main() {
 					panic(err)
 				}
 
-				go func() {
-					diassemblyView.Update(frame)
-				}()
-				go func() {
-					codeView.Update(frame)
-				}()
-				go func() {
-					registersView.Update(frame)
-				}()
-				go func() {
-					stackView.Update(frame)
-				}()
+				app.Ui.QueueUpdateDraw(func() {
+					var wg sync.WaitGroup
+
+					for _, view := range app.Views {
+						wg.Go(func() {
+							view.Update(frame)
+						})
+					}
+
+					wg.Wait()
+				})
 			}
 
 			switch notification["type"] {

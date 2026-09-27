@@ -21,18 +21,16 @@ func NewDisassemblyView(app *GoGdb) *DisassemblyView {
 
 func (view *DisassemblyView) Update(frame *client.StoppedFrame) {
 	fut := view.app.Debugger.DisassembleAroundPC(256)
-	view.app.Ui.QueueUpdateDraw(func() {
-		disas := <-fut
-		if disas.Error != nil {
-			panic(disas.Error)
-		}
+	disas := <-fut
+	if disas.Error != nil {
+		panic(disas.Error)
+	}
 
-		view.SetTitle(frame.Architecture)
-		prettyAssembly, pcLine := view.PrettyPrintDisassembly(&disas.Result, frame.Address)
-		view.Pane.SetText(prettyAssembly)
+	view.SetTitle(frame.Architecture)
+	prettyAssembly, pcLine := view.PrettyPrintDisassembly(&disas.Result, frame.Address)
+	view.Pane.SetText(prettyAssembly)
 
-		view.CenterView(pcLine)
-	})
+	view.CenterView(pcLine)
 }
 
 func (view *DisassemblyView) PrettyPrintDisassembly(disas *client.GdbAsmDisassemblyPayload, pc string) (string, int) {

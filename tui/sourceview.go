@@ -22,21 +22,20 @@ func NewSourceView(app *GoGdb) *SourceView {
 
 func (view *SourceView) Update(_ *client.StoppedFrame) {
 	fut := view.app.Debugger.GetCurrentStackFrame()
-	view.app.Ui.QueueUpdateDraw(func() {
-		stackFramePayload := <-fut
-		if stackFramePayload.Error != nil {
-			view.app.LogError("Error parsing stack frame payload: %s", stackFramePayload.Error)
-			return
-		}
-		frame := stackFramePayload.Result.Frame
+	stackFramePayload := <-fut
+	if stackFramePayload.Error != nil {
+		view.app.LogError("Error parsing stack frame payload: %s", stackFramePayload.Error)
+		return
+	}
 
-		fileLine, err := strconv.Atoi(frame.FileLine)
-		if err != nil {
-			view.app.LogError("Error parsing file line from stack frame: %s", frame.FileLine)
-			fileLine = -1
-		}
-		view.RenderFile(frame.FilePath, fileLine, frame.Function)
-	})
+	frame := stackFramePayload.Result.Frame
+
+	fileLine, err := strconv.Atoi(frame.FileLine)
+	if err != nil {
+		view.app.LogError("Error parsing file line from stack frame: %s", frame.FileLine)
+		fileLine = -1
+	}
+	view.RenderFile(frame.FilePath, fileLine, frame.Function)
 }
 
 func (view *SourceView) RenderFile(filePath string, fileLine int, function string) {

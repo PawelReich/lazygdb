@@ -10,6 +10,8 @@ type GoGdb struct {
 	CommandPrompt *CommandPrompt
 	Debugger      *client.GdbClient
 
+	Views []Updatable
+
 	SourceView *SourceView
 }
 
@@ -19,4 +21,8 @@ type View struct {
 
 func NewView(app *GoGdb) *View {
 	return &View{app: app}
+}
+
+type Updatable interface {
+	Update(*client.StoppedFrame)
 }
