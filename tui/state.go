@@ -9,6 +9,8 @@ type GoGdb struct {
 	Ui            *tview.Application
 	CommandPrompt *CommandPrompt
 	Debugger      *client.GdbClient
+
+	SourceView *SourceView
 }
 
 type View struct {

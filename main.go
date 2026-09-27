@@ -27,6 +27,7 @@ func main() {
 	app.CommandPrompt = commandPrompt
 	diassemblyView := tui.NewDisassemblyView(app)
 	codeView := tui.NewSourceView(app)
+	app.SourceView = codeView
 	registersView := tui.NewRegistersView(app)
 	stackView := tui.NewStackView(app)
 
