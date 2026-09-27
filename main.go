@@ -84,8 +84,9 @@ func main() {
 					errorLog = errorLog[idx+1:]
 					app.LogError(log)
 				}
+			default:
+				app.LogMap(notification)
 			}
-			app.LogMap(notification)
 		}
 	}()
 
