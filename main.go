@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/PawelReich/gogdb/client"
@@ -137,7 +136,6 @@ func main() {
 	var commands []string
 	pflag.StringArrayVarP(&commands, "ex", "e", nil, "Commands to execute")
 	pflag.Parse()
-	fmt.Println(commands)
 	go func() {
 		for _, command := range commands {
 			ret := <-gdb.SendConsoleCommandAsync(command)
