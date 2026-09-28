@@ -131,7 +131,10 @@ func (gdb *GdbClient) setConsoleCapture(capture *strings.Builder) {
 
 func (gdb *GdbClient) Close() {
 	if gdb.gdb != nil {
-		gdb.gdb.Exit()
+		err := gdb.gdb.Exit()
+		if err != nil {
+			panic(err)
+		}
 	}
 	if gdb.notifications != nil {
 		close(gdb.notifications)
