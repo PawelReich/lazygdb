@@ -96,7 +96,10 @@ func main() {
 		case tcell.KeyCtrlQ:
 			app.Ui.Stop()
 		case tcell.KeyCtrlC:
-			app.Debugger.Interrupt()
+			err := app.Debugger.Interrupt()
+			if err != nil {
+				app.LogErrorf("Error while interrupting: %s", err.Error())
+			}
 			return nil
 		case tcell.KeyTab:
 			for i, view := range app.Views {

@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-func (gdb *GdbClient) Interrupt() {
-	gdb.gdb.Interrupt()
+func (gdb *GdbClient) Interrupt() error {
+	return gdb.gdb.Interrupt()
 }
 
 type Instruction struct {
