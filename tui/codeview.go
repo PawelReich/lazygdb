@@ -36,3 +36,8 @@ func (view *CodeView) CenterView(line int) {
 
 	view.Pane.ScrollTo(middlePosition, 0)
 }
+
+func (view *CodeView) SetError(message string) {
+	view.SetTitle("error")
+	view.Pane.SetText(fmt.Sprintf("[red]%s", message))
+}
