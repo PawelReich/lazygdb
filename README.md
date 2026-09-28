@@ -1,0 +1,40 @@
+# lazygdb
+
+Highly opinionated and experimental terminal UI for GDB inspired by the _lazy_ ecosystem of TUI tools.
+
+Heavily inspired by other existing GDB dashboards like [pwndbg](https://github.com/pwndbg/pwndbg) or [gdb-dashboard](https://github.com/cyrus-and/gdb-dashboard).
+
+## Requirements
+
+- Go
+- `gdb` installed and in `PATH`
+
+## Build
+
+```sh
+go build -o lazygdb .
+```
+
+## Run
+
+```sh
+./lazygdb --ex "break main" --ex "target remote :3333"
+```
+
+Use `-e`/`--ex` (repeatable) to run console commands on startup.
+
+## Features
+ * Source view _with syntax highlighting_
+ * _Scrollable_ Command prompt
+ * _Also syntax highlighted_ Disassembly view
+ * Stacktrace viewer _allowing to show past callsites in the source viewer_
+ * Register viewer _with symbol resolving functionality_
+
+## Keys
+
+| Key       | Action                          |
+| --------- | ------------------------------- |
+| `Ctrl-Q`  | Quit                            |
+| `Ctrl-C`  | Interrupt the running program    |
+| `Tab`     | Move focus to the next pane     |
+
