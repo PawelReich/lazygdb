@@ -4,6 +4,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/PawelReich/gogdb/client"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 
@@ -87,6 +88,12 @@ func NewCommandPrompt(app *GoGdb) *CommandPrompt {
 	})
 
 	return view
+}
+
+func (view *CommandPrompt) Update(_ *client.StoppedFrame) {}
+
+func (view *CommandPrompt) GetPane() tview.Primitive {
+	return view.Pane
 }
 
 func (view *CommandPrompt) LogColorf(color string, format string, args ...any) {
