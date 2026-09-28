@@ -52,18 +52,7 @@ func main() {
 				if err != nil {
 					panic(err)
 				}
-
-				app.Ui.QueueUpdateDraw(func() {
-					var wg sync.WaitGroup
-
-					for _, view := range app.Views {
-						wg.Go(func() {
-							view.Update(frame)
-						})
-					}
-
-					wg.Wait()
-				})
+				app.UpdateViews(frame)
 			}
 
 			switch notification["type"] {

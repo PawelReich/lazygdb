@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"sync"
+
 	"github.com/PawelReich/lazygdb/client"
 	"github.com/rivo/tview"
 )
@@ -37,4 +39,18 @@ func (app *LazyGdb) CycleFocus() {
 		app.Ui.SetFocus(app.Views[nextView].GetPane())
 		return
 	}
+}
+
+func (app *LazyGdb) UpdateViews(frame *client.StoppedFrame) {
+	app.Ui.QueueUpdateDraw(func() {
+		var wg sync.WaitGroup
+
+		for _, view := range app.Views {
+			wg.Go(func() {
+				view.Update(frame)
+			})
+		}
+
+		wg.Wait()
+	})
 }
