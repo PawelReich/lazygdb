@@ -85,7 +85,9 @@ func (view *CommandPrompt) LogColorf(color string, format string, args ...any) {
 }
 
 func (view *CommandPrompt) SendCommand(command string) {
-	fmt.Fprintf(view.history, "[wheat::b]%s[white::B]%s\n", Prompt, command)
+	labelColor, _, _ := view.input.GetLabelStyle().Decompose()
+
+	fmt.Fprintf(view.history, "[%s::b]%s[white::B]%s\n", labelColor, Prompt, command)
 
 	if command == "q" || command == "quit" {
 		view.app.Ui.Stop()
