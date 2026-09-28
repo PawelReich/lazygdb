@@ -35,8 +35,8 @@ func NewStacktraceView(app *LazyGdb) *StacktraceView {
 
 		fileLine, err := strconv.Atoi(frame.FileLine)
 		if err != nil {
-			view.app.LogErrorf("Error parsing file line from stack frame: %s", frame.FileLine)
-			fileLine = -1
+			app.SourceView.SetError(fmt.Sprintf("Error parsing file line from stack frame: %s", err.Error()))
+			return
 		}
 
 		app.SourceView.RenderFile(frame.FilePath, fileLine, frame.Function)
@@ -51,9 +51,7 @@ func (view *StacktraceView) Update(frame *client.StoppedFrame) {
 
 	stacktrace := <-fut
 	if stacktrace.Error != nil {
-		view.app.LogErrorf("Error fetching stacktrace: %s", stacktrace.Error.Error())
-		view.Pane.Clear()
-		view.Pane.AddItem("[red::b]Error: "+tview.Escape(stacktrace.Error.Error()), "", 0, nil)
+		view.SetError(stacktrace.Error.Error())
 		return
 	}
 
@@ -81,4 +79,9 @@ func (view *StacktraceView) Update(frame *client.StoppedFrame) {
 
 func (view *StacktraceView) GetPane() tview.Primitive {
 	return view.Pane
+}
+
+func (view *StacktraceView) SetError(message string) {
+	view.Pane.Clear()
+	view.Pane.AddItem(fmt.Sprintf("[red]%s", tview.Escape(message)), "", 0, nil)
 }
