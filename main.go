@@ -4,8 +4,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/PawelReich/gogdb/client"
-	"github.com/PawelReich/gogdb/tui"
+	"github.com/PawelReich/lazygdb/client"
+	"github.com/PawelReich/lazygdb/tui"
 	"github.com/spf13/pflag"
 
 	"github.com/gdamore/tcell/v2"
@@ -21,7 +21,7 @@ func main() {
 
 	ui := tview.NewApplication()
 
-	app := &tui.GoGdb{Ui: ui, Debugger: gdb}
+	app := &tui.LazyGdb{Ui: ui, Debugger: gdb}
 
 	codeView := tui.NewSourceView(app)
 	app.Views = append(app.Views, codeView)

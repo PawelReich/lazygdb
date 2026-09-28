@@ -13,7 +13,7 @@ type CodeView struct {
 	title string
 }
 
-func NewCodeView(app *GoGdb, title string) *CodeView {
+func NewCodeView(app *LazyGdb, title string) *CodeView {
 	textView := tview.NewTextView()
 	textView.SetDynamicColors(true)
 	textView.SetScrollable(true)

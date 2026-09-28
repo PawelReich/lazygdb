@@ -1,11 +1,11 @@
 package tui
 
 import (
-	"github.com/PawelReich/gogdb/client"
+	"github.com/PawelReich/lazygdb/client"
 	"github.com/rivo/tview"
 )
 
-type GoGdb struct {
+type LazyGdb struct {
 	Ui            *tview.Application
 	CommandPrompt *CommandPrompt
 	Debugger      *client.GdbClient
@@ -16,10 +16,10 @@ type GoGdb struct {
 }
 
 type View struct {
-	app *GoGdb
+	app *LazyGdb
 }
 
-func NewView(app *GoGdb) *View {
+func NewView(app *LazyGdb) *View {
 	return &View{app: app}
 }
 

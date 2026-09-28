@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/PawelReich/gogdb/client"
+	"github.com/PawelReich/lazygdb/client"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 
@@ -19,11 +19,11 @@ type CommandPrompt struct {
 	history *tview.TextView
 	input   *tview.InputField
 
-	app         *GoGdb
+	app         *LazyGdb
 	lastCommand string
 }
 
-func NewCommandPrompt(app *GoGdb) *CommandPrompt {
+func NewCommandPrompt(app *LazyGdb) *CommandPrompt {
 	cmdHistory := tview.NewTextView()
 	cmdHistory.SetDynamicColors(true)
 	cmdHistory.SetScrollable(true)

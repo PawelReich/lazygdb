@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/PawelReich/gogdb/client"
+	"github.com/PawelReich/lazygdb/client"
 	"github.com/alecthomas/chroma/v2"
 	"github.com/alecthomas/chroma/v2/lexers"
 	"github.com/rivo/tview"
@@ -16,7 +16,7 @@ type SourceView struct {
 	*CodeView
 }
 
-func NewSourceView(app *GoGdb) *SourceView {
+func NewSourceView(app *LazyGdb) *SourceView {
 	return &SourceView{CodeView: NewCodeView(app, "Source")}
 }
 

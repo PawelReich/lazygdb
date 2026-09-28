@@ -1,4 +1,4 @@
-module github.com/PawelReich/gogdb
+module github.com/PawelReich/lazygdb
 
 go 1.26.5
 

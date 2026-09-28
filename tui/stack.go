@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/PawelReich/gogdb/client"
+	"github.com/PawelReich/lazygdb/client"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -18,7 +18,7 @@ type StackView struct {
 	currentStack []client.GdbStackListFramesFrame
 }
 
-func NewStackView(app *GoGdb) *StackView {
+func NewStackView(app *LazyGdb) *StackView {
 
 	list := tview.NewList()
 	list.SetBorder(true)

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/PawelReich/gogdb/client"
+	"github.com/PawelReich/lazygdb/client"
 
 	"github.com/alecthomas/chroma/v2"
 	"github.com/alecthomas/chroma/v2/lexers"
@@ -15,7 +15,7 @@ type DisassemblyView struct {
 	*CodeView
 }
 
-func NewDisassemblyView(app *GoGdb) *DisassemblyView {
+func NewDisassemblyView(app *LazyGdb) *DisassemblyView {
 	return &DisassemblyView{CodeView: NewCodeView(app, "Disassembly")}
 }
 

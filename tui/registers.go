@@ -3,7 +3,7 @@ package tui
 import (
 	"fmt"
 
-	"github.com/PawelReich/gogdb/client"
+	"github.com/PawelReich/lazygdb/client"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -15,7 +15,7 @@ type RegistersView struct {
 	oldRegisters []client.Register
 }
 
-func NewRegistersView(app *GoGdb) *RegistersView {
+func NewRegistersView(app *LazyGdb) *RegistersView {
 	textView := tview.NewTable()
 	textView.SetBorder(true)
 	textView.SetTitle("Registers")
