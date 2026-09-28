@@ -24,21 +24,6 @@ func (gdb *GdbClient) DisassembleAroundPC(byteRange int) <-chan AsyncDecodedResu
 	return SendDecodeAsync[GdbAsmDisassemblyPayload](gdb, "data-disassemble", "-s", fmt.Sprintf("$pc-%d", byteRange/2), "-e", fmt.Sprintf("$pc+%d", byteRange/2), "--", "0")
 }
 
-type GdbStackFrame struct {
-	Address  string `mapstructure:"address"`
-	Function string `mapstructure:"func"`
-	FilePath string `mapstructure:"fullname"`
-	FileLine string `mapstructure:"line"`
-}
-
-type GdbStackFramePayload struct {
-	Frame GdbStackFrame `mapstructure:"frame"`
-}
-
-func (gdb *GdbClient) GetCurrentStackFrame() <-chan AsyncDecodedResult[GdbStackFramePayload] {
-	return SendDecodeAsync[GdbStackFramePayload](gdb, "stack-info-frame")
-}
-
 type GdbRegisterNamesPayload struct {
 	RegisterNames []string `mapstructure:"register-names"`
 }
