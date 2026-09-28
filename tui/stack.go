@@ -35,7 +35,7 @@ func NewStackView(app *GoGdb) *StackView {
 
 		fileLine, err := strconv.Atoi(frame.FileLine)
 		if err != nil {
-			view.app.LogError("Error parsing file line from stack frame: %s", frame.FileLine)
+			view.app.LogErrorf("Error parsing file line from stack frame: %s", frame.FileLine)
 			fileLine = -1
 		}
 
@@ -51,7 +51,7 @@ func (view *StackView) Update(frame *client.StoppedFrame) {
 
 	stacktrace := <-fut
 	if stacktrace.Error != nil {
-		view.app.LogError("Error fetching stacktrace: %s", stacktrace.Error.Error())
+		view.app.LogErrorf("Error fetching stacktrace: %s", stacktrace.Error.Error())
 		view.Pane.Clear()
 		view.Pane.AddItem("[red::b]Error: "+tview.Escape(stacktrace.Error.Error()), "", 0, nil)
 		return
