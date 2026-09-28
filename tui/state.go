@@ -24,5 +24,6 @@ func NewView(app *GoGdb) *View {
 }
 
 type Updatable interface {
+	GetPane() tview.Primitive
 	Update(*client.StoppedFrame)
 }

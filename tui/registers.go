@@ -60,3 +60,7 @@ func (view *RegistersView) Update(frame *client.StoppedFrame) {
 
 	view.oldRegisters = registers.Result
 }
+
+func (view *RegistersView) GetPane() tview.Primitive {
+	return view.Pane
+}

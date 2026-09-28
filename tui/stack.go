@@ -78,3 +78,7 @@ func (view *StackView) Update(frame *client.StoppedFrame) {
 		view.Pane.AddItem(stackEntry, stackSecondary.String(), 0, nil)
 	}
 }
+
+func (view *StackView) GetPane() tview.Primitive {
+	return view.Pane
+}
