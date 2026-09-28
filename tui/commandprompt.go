@@ -46,29 +46,7 @@ func NewCommandPrompt(app *LazyGdb) *CommandPrompt {
 		} else {
 			view.lastCommand = command
 		}
-
-		fmt.Fprintf(cmdHistory, "[white]%s%s\n", Prompt, command)
-
-		if command == "q" || command == "quit" {
-			app.Ui.Stop()
-		}
-
-		if command[0] == '-' {
-			// Drop '-' as it is assumed in `SendAsync`
-			command = command[1:]
-			splitCmd := strings.Split(command, " ")
-
-			// Prepare MI command and its arguments
-			command = splitCmd[0]
-			splitCmd = splitCmd[1:]
-
-			res := <-app.Debugger.SendAsync(command, splitCmd...)
-			app.LogMap(res.Result)
-
-		} else {
-			res := <-app.Debugger.SendConsoleCommandAsync(command)
-			app.LogInfo(res.Result)
-		}
+		view.SendCommand(command)
 	})
 
 	flex.SetBorder(true)
@@ -104,4 +82,29 @@ func (view *CommandPrompt) LogColorf(color string, format string, args ...any) {
 
 	view.input.SetText("")
 	view.history.ScrollToEnd()
+}
+
+func (view *CommandPrompt) SendCommand(command string) {
+	fmt.Fprintf(view.history, "[wheat::b]%s[white::B]%s\n", Prompt, command)
+
+	if command == "q" || command == "quit" {
+		view.app.Ui.Stop()
+	}
+
+	if command[0] == '-' {
+		// Drop '-' as it is assumed in `SendAsync`
+		command = command[1:]
+		splitCmd := strings.Split(command, " ")
+
+		// Prepare MI command and its arguments
+		command = splitCmd[0]
+		splitCmd = splitCmd[1:]
+
+		res := <-view.app.Debugger.SendAsync(command, splitCmd...)
+		view.app.LogMap(res.Result)
+
+	} else {
+		res := <-view.app.Debugger.SendConsoleCommandAsync(command)
+		view.app.LogInfo(res.Result)
+	}
 }
