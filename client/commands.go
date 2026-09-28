@@ -68,13 +68,17 @@ func (gdb *GdbClient) GetRegisters() <-chan AsyncDecodedResult[[]Register] {
 
 		for _, register := range values.Result.RegisterValues {
 			registerIndex, err := strconv.Atoi(register.Index)
+
+			var value string
 			if err != nil {
-				panic(err)
+				value = fmt.Sprintf("Error: %s", err.Error())
+			} else {
+				value = register.Value
 			}
 
 			registers = append(registers, Register{
 				Name:  names.Result.RegisterNames[registerIndex],
-				Value: register.Value,
+				Value: value,
 			})
 		}
 
