@@ -2,7 +2,6 @@ package main
 
 import (
 	"strings"
-	"sync"
 
 	"github.com/PawelReich/lazygdb/client"
 	"github.com/PawelReich/lazygdb/tui"
@@ -134,13 +133,7 @@ func main() {
 	pflag.Parse()
 	go func() {
 		for _, command := range commands {
-			ret := <-gdb.SendConsoleCommandAsync(command)
-
-			if ret.Error != nil {
-				app.LogError(ret.Error.Error())
-			}
-
-			app.LogInfo(ret.Result)
+			commandPrompt.SendCommand(command)
 		}
 	}()
 
