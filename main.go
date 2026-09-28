@@ -102,14 +102,9 @@ func main() {
 			}
 			return nil
 		case tcell.KeyTab:
-			for i, view := range app.Views {
-				if !view.GetPane().HasFocus() {
-					continue
-				}
-				nextView := (i + 1) % len(app.Views)
-				app.Ui.SetFocus(app.Views[nextView].GetPane())
-				return nil
-			}
+			app.CycleFocus()
+			return nil
+
 		}
 
 		return event
