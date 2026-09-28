@@ -151,7 +151,7 @@ func main() {
 			ret := <-gdb.SendConsoleCommandAsync(command)
 
 			if ret.Error != nil {
-				app.LogError(err.Error())
+				app.LogError(ret.Error.Error())
 			}
 
 			app.LogInfo(ret.Result)
