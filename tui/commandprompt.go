@@ -1,7 +1,6 @@
 package tui
 
 import (
-	"os"
 	"strings"
 
 	"github.com/PawelReich/lazygdb/client"
@@ -51,7 +50,7 @@ func NewCommandPrompt(app *LazyGdb) *CommandPrompt {
 		fmt.Fprintf(cmdHistory, "[white]%s%s\n", Prompt, command)
 
 		if command == "q" || command == "quit" {
-			os.Exit(0)
+			app.Ui.Stop()
 		}
 
 		if command[0] == '-' {
