@@ -23,17 +23,20 @@ func (view *DisassemblyView) Update(frame *client.StoppedFrame) {
 	fut := view.app.Debugger.DisassembleAroundPC(256)
 	disas := <-fut
 	if disas.Error != nil {
-		panic(disas.Error)
+		view.SetError(disas.Error.Error())
+	}
+
+	prettyAssembly, pcLine, err := view.PrettyPrintDisassembly(&disas.Result, frame.Address)
+	if err != nil {
+		view.SetError(err.Error())
 	}
 
 	view.SetTitle(frame.Architecture)
-	prettyAssembly, pcLine := view.PrettyPrintDisassembly(&disas.Result, frame.Address)
 	view.Pane.SetText(prettyAssembly)
-
 	view.CenterView(pcLine)
 }
 
-func (view *DisassemblyView) PrettyPrintDisassembly(disas *client.GdbAsmDisassemblyPayload, pc string) (string, int) {
+func (view *DisassemblyView) PrettyPrintDisassembly(disas *client.GdbAsmDisassemblyPayload, pc string) (string, int, error) {
 	var sb strings.Builder
 	pcLine := 0
 
@@ -57,7 +60,7 @@ func (view *DisassemblyView) PrettyPrintDisassembly(disas *client.GdbAsmDisassem
 
 		iterator, err := lexer.Tokenise(nil, insn.Inst)
 		if err != nil {
-			panic(err)
+			return "", -1, err
 		}
 
 		for _, token := range iterator.Tokens() {
@@ -92,5 +95,5 @@ func (view *DisassemblyView) PrettyPrintDisassembly(disas *client.GdbAsmDisassem
 		sb.WriteString("[::B]\n")
 	}
 
-	return sb.String(), pcLine
+	return sb.String(), pcLine, nil
 }
