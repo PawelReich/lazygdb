@@ -10,7 +10,7 @@ import (
 	"github.com/rivo/tview"
 )
 
-type StackView struct {
+type StacktraceView struct {
 	*View
 
 	Pane *tview.List
@@ -18,7 +18,7 @@ type StackView struct {
 	currentStack []client.GdbStackListFramesFrame
 }
 
-func NewStackView(app *LazyGdb) *StackView {
+func NewStacktraceView(app *LazyGdb) *StacktraceView {
 
 	list := tview.NewList()
 	list.SetBorder(true)
@@ -28,7 +28,7 @@ func NewStackView(app *LazyGdb) *StackView {
 	list.SetSelectedBackgroundColor(tcell.ColorBlack)
 	list.SetSelectedStyle(tcell.StyleDefault.Bold(true))
 
-	view := &StackView{View: NewView(app), Pane: list}
+	view := &StacktraceView{View: NewView(app), Pane: list}
 
 	list.SetChangedFunc(func(index int, mainText, secondaryText string, shortcut rune) {
 		frame := view.currentStack[index]
@@ -45,7 +45,7 @@ func NewStackView(app *LazyGdb) *StackView {
 	return view
 }
 
-func (view *StackView) Update(frame *client.StoppedFrame) {
+func (view *StacktraceView) Update(frame *client.StoppedFrame) {
 
 	fut := view.app.Debugger.GetStacktrace()
 
@@ -79,6 +79,6 @@ func (view *StackView) Update(frame *client.StoppedFrame) {
 	}
 }
 
-func (view *StackView) GetPane() tview.Primitive {
+func (view *StacktraceView) GetPane() tview.Primitive {
 	return view.Pane
 }

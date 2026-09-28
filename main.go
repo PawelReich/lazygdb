@@ -37,8 +37,8 @@ func main() {
 	registersView := tui.NewRegistersView(app)
 	app.Views = append(app.Views, registersView)
 
-	stackView := tui.NewStackView(app)
-	app.Views = append(app.Views, stackView)
+	stacktraceView := tui.NewStacktraceView(app)
+	app.Views = append(app.Views, stacktraceView)
 
 	go func() {
 		var errorLog string
@@ -143,7 +143,7 @@ func main() {
 
 	// 5. Registers (Middle Right)
 	// Starts at row 2, column 2. Spans 1 row, 1 column.
-	grid.AddItem(stackView.Pane, 2, 2, 1, 1, 0, 0, false)
+	grid.AddItem(stacktraceView.Pane, 2, 2, 1, 1, 0, 0, false)
 
 	var commands []string
 	pflag.StringArrayVarP(&commands, "ex", "e", nil, "Commands to execute")
