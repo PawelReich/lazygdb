@@ -1,8 +1,10 @@
 package client
 
 import (
+	"errors"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/cyrus-and/gdb"
 	"github.com/mitchellh/mapstructure"
@@ -53,17 +55,25 @@ func New() (*GdbClient, error) {
 	return gdbClient, nil
 }
 
-func (gdb *GdbClient) Send(operation string, args ...string) (map[string]any, error) {
-	ret, err := gdb.gdb.Send(operation, args...)
-	return ret, err
-}
-
 func (gdb *GdbClient) SendAsync(operation string, args ...string) <-chan AsyncResult {
 	ch := make(chan AsyncResult, 1)
+
 	go func() {
-		res, err := gdb.gdb.Send(operation, args...)
-		ch <- AsyncResult{Result: res, Error: err}
-		close(ch)
+		defer close(ch)
+
+		timeoutCh := make(chan AsyncResult, 1)
+		defer close(timeoutCh)
+		go func() {
+			ret, err := gdb.gdb.Send(operation, args...)
+			timeoutCh <- AsyncResult{Result: ret, Error: err}
+		}()
+
+		select {
+		case res := <-timeoutCh:
+			ch <- res
+		case <-time.After(1 * time.Second):
+			ch <- AsyncResult{Result: nil, Error: errors.New("Timeout")}
+		}
 	}()
 	return ch
 }
@@ -102,12 +112,12 @@ func (gdb *GdbClient) SendConsoleCommandAsync(command string) <-chan AsyncDecode
 		gdb.setConsoleCapture(&captured)
 		defer gdb.setConsoleCapture(nil)
 
-		_, err := gdb.Send("interpreter-exec", "console", command)
+		ret := <-gdb.SendAsync("interpreter-exec", "console", command)
 
 		gdb.setConsoleCapture(nil)
 		result := captured.String()
 
-		ch <- AsyncDecodedResult[string]{result, err}
+		ch <- AsyncDecodedResult[string]{result, ret.Error}
 	}()
 
 	return ch
