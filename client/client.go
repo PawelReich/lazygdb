@@ -45,9 +45,9 @@ func New() (*GdbClient, error) {
 
 	gdbClient.gdb = gdb
 
-	_, err = gdbClient.gdb.Send("gdb-set", "mi-async", "on")
+	ret := <-gdbClient.SendAsync("gdb-set", "mi-async", "on")
 
-	if err != nil {
+	if ret.Error != nil {
 		gdbClient.Close()
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (gdb *GdbClient) SendAsync(operation string, args ...string) <-chan AsyncRe
 		select {
 		case res := <-timeoutCh:
 			ch <- res
-		case <-time.After(1 * time.Second):
+		case <-time.After(5 * time.Second):
 			ch <- AsyncResult{Result: nil, Error: errors.New("Timeout")}
 		}
 	}()
