@@ -30,32 +30,48 @@ func (view *SourceView) Update(_ *client.StoppedFrame) {
 
 	frame := stackFramePayload.Result.Frame
 
+	if frame.FilePath == "" {
+		view.SetError("No source available")
+		return
+	}
+
 	fileLine, err := strconv.Atoi(frame.FileLine)
 	if err != nil {
-		view.app.LogErrorf("Error parsing file line from stack frame: %s", frame.FileLine)
-		fileLine = -1
+		view.SetError(fmt.Sprintf("Error parsing file line from stack frame: %s", frame.FileLine))
+		return
 	}
 	view.RenderFile(frame.FilePath, fileLine, frame.Function)
 }
 
 func (view *SourceView) RenderFile(filePath string, fileLine int, function string) {
+
+	prettyPrinted, err := view.PrettyPrintCode(filePath, fileLine)
+	if err != nil {
+		view.SetError(err.Error())
+		return
+	}
 	view.SetTitle(function)
-	view.Pane.SetText(view.PrettyPrintCode(filePath, fileLine))
+	view.Pane.SetText(prettyPrinted)
 	view.CenterView(fileLine)
 }
 
-func (view *SourceView) PrettyPrintCode(filePath string, fileCurrentLine int) string {
+func (view *SourceView) PrettyPrintCode(filePath string, fileCurrentLine int) (string, error) {
 	var sb strings.Builder
 
 	code, err := os.ReadFile(filePath)
 	if err != nil {
-		return fmt.Sprintf("[red::b]Could not read file: %s", filePath)
+		return "", err
 	}
 	codeString := string(code)
 
 	lexer := lexers.Match(filePath)
 
 	iterator, err := lexer.Tokenise(nil, codeString)
+
+	if err != nil {
+		return "", err
+	}
+
 	tokens := iterator.Tokens()
 	lines := chroma.SplitTokensIntoLines(tokens)
 
@@ -103,5 +119,5 @@ func (view *SourceView) PrettyPrintCode(filePath string, fileCurrentLine int) st
 		sb.WriteString("[::B]")
 	}
 
-	return sb.String()
+	return sb.String(), nil
 }
