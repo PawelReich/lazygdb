@@ -23,15 +23,16 @@ func main() {
 
 	app := &tui.GoGdb{Ui: ui, Debugger: gdb}
 
+	codeView := tui.NewSourceView(app)
+	app.Views = append(app.Views, codeView)
+	app.SourceView = codeView
+
 	commandPrompt := tui.NewCommandPrompt(app)
+	app.Views = append(app.Views, commandPrompt)
 	app.CommandPrompt = commandPrompt
 
 	diassemblyView := tui.NewDisassemblyView(app)
 	app.Views = append(app.Views, diassemblyView)
-
-	codeView := tui.NewSourceView(app)
-	app.SourceView = codeView
-	app.Views = append(app.Views, codeView)
 
 	registersView := tui.NewRegistersView(app)
 	app.Views = append(app.Views, registersView)
@@ -98,15 +99,13 @@ func main() {
 			app.Debugger.Interrupt()
 			return nil
 		case tcell.KeyTab:
-			if diassemblyView.Pane.HasFocus() {
-				app.Ui.SetFocus(codeView.Pane)
-			} else if codeView.Pane.HasFocus() {
-				app.Ui.SetFocus(commandPrompt.Pane)
-			} else if commandPrompt.Pane.HasFocus() {
-				app.Ui.SetFocus(stackView.Pane)
+			for i, view := range app.Views {
+				if !view.GetPane().HasFocus() {
+					continue
+				}
+				nextView := (i + 1) % len(app.Views)
+				app.Ui.SetFocus(app.Views[nextView].GetPane())
 				return nil
-			} else if stackView.Pane.HasFocus() {
-				app.Ui.SetFocus(diassemblyView.Pane)
 			}
 		}
 
