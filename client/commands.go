@@ -6,10 +6,6 @@ import (
 	"strings"
 )
 
-func (gdb *GdbClient) Interrupt() error {
-	return gdb.gdb.Interrupt()
-}
-
 type Instruction struct {
 	Address string `mapstructure:"address"`
 	Inst    string `mapstructure:"inst"`

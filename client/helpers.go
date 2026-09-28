@@ -22,3 +22,7 @@ func (gdb *GdbClient) ParseFrame(frame map[string]any) (*StoppedFrame, error) {
 
 	return &decodedPayload.Frame, err
 }
+
+func (gdb *GdbClient) Interrupt() error {
+	return gdb.gdb.Interrupt()
+}
