@@ -20,28 +20,7 @@ func NewSourceView(app *LazyGdb) *SourceView {
 	return &SourceView{CodeView: NewCodeView(app, "Source")}
 }
 
-func (view *SourceView) Update(_ *client.StoppedFrame) {
-	fut := view.app.Debugger.GetCurrentStackFrame()
-	stackFramePayload := <-fut
-	if stackFramePayload.Error != nil {
-		view.app.LogErrorf("Error parsing stack frame payload: %s", stackFramePayload.Error)
-		return
-	}
-
-	frame := stackFramePayload.Result.Frame
-
-	if frame.FilePath == "" {
-		view.SetError("No source available")
-		return
-	}
-
-	fileLine, err := strconv.Atoi(frame.FileLine)
-	if err != nil {
-		view.SetError(fmt.Sprintf("Error parsing file line from stack frame: %s", frame.FileLine))
-		return
-	}
-	view.RenderFile(frame.FilePath, fileLine, frame.Function)
-}
+func (view *SourceView) Update(_ *client.StoppedFrame) {}
 
 func (view *SourceView) RenderFile(filePath string, fileLine int, function string) {
 
