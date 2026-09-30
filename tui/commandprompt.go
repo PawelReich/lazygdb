@@ -62,7 +62,7 @@ func NewCommandPrompt(app *LazyGdb) *CommandPrompt {
 		case tcell.KeyUp:
 			view.ScrollHistory(1)
 		default:
-			view.historyScrollOffset = 0
+			view.historyScrollOffset = -1
 		}
 		return event
 	})
