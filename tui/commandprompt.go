@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"database/sql"
 	"strings"
 
 	"github.com/PawelReich/lazygdb/client"
@@ -18,8 +19,9 @@ type CommandPrompt struct {
 	history *tview.TextView
 	input   *tview.InputField
 
-	app         *LazyGdb
-	lastCommand string
+	app                 *LazyGdb
+	lastCommand         string
+	historyScrollOffset int
 }
 
 func NewCommandPrompt(app *LazyGdb) *CommandPrompt {
@@ -52,9 +54,15 @@ func NewCommandPrompt(app *LazyGdb) *CommandPrompt {
 	scrollLog := cmdHistory.InputHandler()
 	flex.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
-		case tcell.KeyUp, tcell.KeyDown, tcell.KeyLeft, tcell.KeyRight,
+		case tcell.KeyLeft, tcell.KeyRight,
 			tcell.KeyPgUp, tcell.KeyPgDn:
 			scrollLog(event, func(tview.Primitive) {})
+		case tcell.KeyDown:
+			view.ScrollHistory(-1)
+		case tcell.KeyUp:
+			view.ScrollHistory(1)
+		default:
+			view.historyScrollOffset = 0
 		}
 		return event
 	})
@@ -117,4 +125,21 @@ func (view *CommandPrompt) HandleCommand(command string) {
 		view.sendCommand(command)
 	}
 	view.lastCommand = command
+	err := view.app.Db.InsertHistory(command)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (view *CommandPrompt) ScrollHistory(direction int) {
+	offset := view.historyScrollOffset + direction
+	if offset < 0 {
+		return
+	}
+	command, err := view.app.Db.GetCommandFromHistory(uint(offset))
+	if err == sql.ErrNoRows {
+		return
+	}
+	view.input.SetText(command)
+	view.historyScrollOffset = offset
 }
