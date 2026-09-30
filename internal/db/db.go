@@ -34,7 +34,10 @@ func NewDb() (*Db, error) {
 	}
 	db := &Db{db: sqLiteDb, cwd: cwd}
 
-	db.EnsureCommandHistoryTable()
+	err = db.EnsureCommandHistoryTable()
+	if err != nil {
+		return nil, err
+	}
 
 	return db, nil
 }
