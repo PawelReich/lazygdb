@@ -41,11 +41,6 @@ func NewCommandPrompt(app *LazyGdb) *CommandPrompt {
 		}
 
 		command := cmdPrompt.GetText()
-		if command == "" {
-			command = view.lastCommand
-		} else {
-			view.lastCommand = command
-		}
 		view.HandleCommand(command)
 	})
 
@@ -110,10 +105,16 @@ func (view *CommandPrompt) sendCommand(command string) {
 func (view *CommandPrompt) HandleCommand(command string) {
 
 	switch command {
+	case "":
+		if view.lastCommand == "" {
+			break
+		}
+
 	case "q", "quit":
 		view.app.Ui.Stop()
 
 	default:
 		view.sendCommand(command)
 	}
+	view.lastCommand = command
 }
