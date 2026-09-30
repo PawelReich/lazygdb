@@ -133,7 +133,7 @@ func main() {
 	pflag.Parse()
 	go func() {
 		for _, command := range commands {
-			commandPrompt.SendCommand(command)
+			commandPrompt.HandleCommand(command)
 		}
 	}()
 

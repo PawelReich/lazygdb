@@ -46,7 +46,7 @@ func NewCommandPrompt(app *LazyGdb) *CommandPrompt {
 		} else {
 			view.lastCommand = command
 		}
-		view.SendCommand(command)
+		view.HandleCommand(command)
 	})
 
 	flex.SetBorder(true)
@@ -84,14 +84,10 @@ func (view *CommandPrompt) LogColorf(color string, format string, args ...any) {
 	view.history.ScrollToEnd()
 }
 
-func (view *CommandPrompt) SendCommand(command string) {
+func (view *CommandPrompt) sendCommand(command string) {
 	labelColor, _, _ := view.input.GetLabelStyle().Decompose()
 
 	fmt.Fprintf(view.history, "[%s::b]%s[white::B]%s\n", labelColor, Prompt, command)
-
-	if command == "q" || command == "quit" {
-		view.app.Ui.Stop()
-	}
 
 	if command[0] == '-' {
 		// Drop '-' as it is assumed in `SendAsync`
@@ -108,5 +104,16 @@ func (view *CommandPrompt) SendCommand(command string) {
 	} else {
 		res := <-view.app.Debugger.SendConsoleCommandAsync(command)
 		view.app.LogInfo(res.Result)
+	}
+}
+
+func (view *CommandPrompt) HandleCommand(command string) {
+
+	switch command {
+	case "q", "quit":
+		view.app.Ui.Stop()
+
+	default:
+		view.sendCommand(command)
 	}
 }
