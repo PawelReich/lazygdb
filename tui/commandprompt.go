@@ -111,12 +111,14 @@ func (view *CommandPrompt) sendCommand(command string) {
 }
 
 func (view *CommandPrompt) HandleCommand(command string) {
-
+	if command == "" {
+		if view.lastCommand == "" {
+			return
+		}
+		command = view.lastCommand
+	}
 	switch command {
 	case "":
-		if view.lastCommand == "" {
-			break
-		}
 
 	case "q", "quit":
 		view.app.Ui.Stop()
