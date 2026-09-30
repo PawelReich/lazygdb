@@ -4,6 +4,10 @@ Highly opinionated and experimental terminal UI for GDB inspired by the _lazy_ e
 
 Heavily inspired by other existing GDB dashboards like [pwndbg](https://github.com/pwndbg/pwndbg) or [gdb-dashboard](https://github.com/cyrus-and/gdb-dashboard).
 
+<p align="center">
+  <img src="https://github.com/PawelReich/lazygdb/blob/master/meta/screenshot.png" alt="Poor man's tool screenshot" width="600"/>
+</p>
+
 ## Requirements
 
 - Go
