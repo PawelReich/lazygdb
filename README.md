@@ -33,6 +33,7 @@ Use `-e`/`--ex` (repeatable) to run console commands on startup.
  * _Also syntax highlighted_ Disassembly view
  * Stacktrace viewer _allowing to show past callsites in the source viewer_
  * Register viewer _with symbol resolving functionality_
+ * Unobtrusive _Working directory-based_ command history
 
 ## Keys
 
@@ -41,4 +42,5 @@ Use `-e`/`--ex` (repeatable) to run console commands on startup.
 | `Ctrl-Q`  | Quit                            |
 | `Ctrl-C`  | Interrupt the running program    |
 | `Tab`     | Move focus to the next pane     |
+| `Up/Down` | Scroll command history
 
