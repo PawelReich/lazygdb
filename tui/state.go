@@ -1,14 +1,16 @@
 package tui
 
 import (
-	"sync"
-
 	"github.com/PawelReich/lazygdb/client"
+	"github.com/PawelReich/lazygdb/internal/db"
 	"github.com/rivo/tview"
+	"sync"
 )
 
 type LazyGdb struct {
-	Ui            *tview.Application
+	Ui *tview.Application
+	Db *db.Db
+
 	CommandPrompt *CommandPrompt
 	Debugger      *client.GdbClient
 

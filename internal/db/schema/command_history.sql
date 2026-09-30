@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS command_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cwd TEXT NOT NULL,
+    command TEXT NOT NULL,
+    executed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_cwd ON command_history(cwd);

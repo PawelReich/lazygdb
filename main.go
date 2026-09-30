@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/PawelReich/lazygdb/client"
+	"github.com/PawelReich/lazygdb/internal/db"
 	"github.com/PawelReich/lazygdb/tui"
 	"github.com/spf13/pflag"
 
@@ -19,8 +20,12 @@ func main() {
 	}
 
 	ui := tview.NewApplication()
+	db, err := db.NewDb()
+	if err != nil {
+		panic(err)
+	}
 
-	app := &tui.LazyGdb{Ui: ui, Debugger: gdb}
+	app := &tui.LazyGdb{Ui: ui, Debugger: gdb, Db: db}
 
 	codeView := tui.NewSourceView(app)
 	app.Views = append(app.Views, codeView)
