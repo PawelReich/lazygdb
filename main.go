@@ -55,6 +55,8 @@ func main() {
 			}
 
 			switch notification["type"] {
+			case "target":
+				fallthrough
 			case "console":
 				fallthrough
 			case "log":
