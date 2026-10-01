@@ -101,8 +101,7 @@ func (view *CommandPrompt) sendCommand(command string) {
 		command = splitCmd[0]
 		splitCmd = splitCmd[1:]
 
-		res := <-view.app.Debugger.SendAsync(command, splitCmd...)
-		view.app.LogMap(res.Result)
+		<-view.app.Debugger.SendAsync(command, splitCmd...)
 
 	} else {
 		res := <-view.app.Debugger.SendConsoleCommandAsync(command)
