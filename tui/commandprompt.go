@@ -91,7 +91,7 @@ func (view *CommandPrompt) GetPane() tview.Primitive {
 func (view *CommandPrompt) sendCommand(command string) {
 	labelColor, _, _ := view.input.GetLabelStyle().Decompose()
 
-	fmt.Fprintf(view, "[%s::b]%s[white::B]%s\n", labelColor, Prompt, command)
+	_, _ = fmt.Fprintf(view, "[%s::b]%s[white::B]%s\n", labelColor, Prompt, command)
 
 	if command[0] == '-' {
 		// Drop '-' as it is assumed in `SendAsync`
@@ -161,7 +161,7 @@ func (view *CommandPrompt) Write(p []byte) (int, error) {
 func (view *CommandPrompt) renderHistory() {
 	view.historyMutex.Lock()
 
-	view.history.Write(view.historyBuffer.Bytes())
+	_, _ = view.history.Write(view.historyBuffer.Bytes())
 	view.history.ScrollToEnd()
 	view.historyBuffer.Reset()
 
