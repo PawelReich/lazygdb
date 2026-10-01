@@ -43,6 +43,7 @@ func NewCommandPrompt(app *LazyGdb) *CommandPrompt {
 		}
 
 		command := cmdPrompt.GetText()
+		view.input.SetText("")
 		view.HandleCommand(command)
 	})
 
@@ -83,7 +84,6 @@ func (view *CommandPrompt) LogColorf(color string, format string, args ...any) {
 	}
 	fmt.Fprintf(view.history, "[%s]%s[-]\n", color, message)
 
-	view.input.SetText("")
 	view.history.ScrollToEnd()
 }
 
