@@ -23,7 +23,6 @@ func NewSourceView(app *LazyGdb) *SourceView {
 func (view *SourceView) Update(_ *client.StoppedFrame) {}
 
 func (view *SourceView) RenderFile(filePath string, fileLine int, function string) {
-
 	prettyPrinted, err := view.PrettyPrintCode(filePath, fileLine)
 	if err != nil {
 		view.SetError(err.Error())
@@ -46,7 +45,6 @@ func (view *SourceView) PrettyPrintCode(filePath string, fileCurrentLine int) (s
 	lexer := lexers.Match(filePath)
 
 	iterator, err := lexer.Tokenise(nil, codeString)
-
 	if err != nil {
 		return "", err
 	}

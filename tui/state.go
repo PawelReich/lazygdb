@@ -1,10 +1,11 @@
 package tui
 
 import (
+	"sync"
+
 	"github.com/PawelReich/lazygdb/client"
 	"github.com/PawelReich/lazygdb/internal/db"
 	"github.com/rivo/tview"
-	"sync"
 )
 
 type LazyGdb struct {

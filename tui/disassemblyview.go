@@ -51,7 +51,6 @@ func (view *DisassemblyView) PrettyPrintDisassembly(disas *client.GdbAsmDisassem
 			sb.WriteString("[white::ib]")
 		} else {
 			sb.WriteString("[grey::i]")
-
 		}
 		sb.WriteString(insn.Address)
 		sb.WriteString(" [::I] ")

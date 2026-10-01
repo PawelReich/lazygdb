@@ -16,7 +16,6 @@ import (
 
 func main() {
 	gdb, err := client.New()
-
 	if err != nil {
 		panic(err)
 	}
@@ -140,6 +139,7 @@ func main() {
 	var commands []string
 	pflag.StringArrayVarP(&commands, "ex", "e", nil, "Commands to execute")
 	pflag.Parse()
+
 	go func() {
 		for _, command := range commands {
 			commandPrompt.HandleCommand(command)
@@ -150,5 +150,4 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 }

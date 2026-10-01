@@ -49,7 +49,7 @@ func getDbPath() (string, error) {
 	}
 
 	dbDir := filepath.Join(cacheDir, "lazygdb")
-	err = os.MkdirAll(dbDir, 0755)
+	err = os.MkdirAll(dbDir, 0o755)
 	if err != nil {
 		return "", err
 	}

@@ -99,7 +99,6 @@ func SendDecodeAsync[T any](gdb *GdbClient, operation string, args ...string) <-
 }
 
 func (gdb *GdbClient) SendConsoleCommandAsync(command string) <-chan AsyncDecodedResult[string] {
-
 	ch := make(chan AsyncDecodedResult[string], 1)
 
 	go func() {

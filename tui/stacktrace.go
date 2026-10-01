@@ -19,7 +19,6 @@ type StacktraceView struct {
 }
 
 func NewStacktraceView(app *LazyGdb) *StacktraceView {
-
 	list := tview.NewList()
 	list.SetBorder(true)
 	list.SetTitle("Stacktrace")
@@ -46,7 +45,6 @@ func NewStacktraceView(app *LazyGdb) *StacktraceView {
 }
 
 func (view *StacktraceView) Update(frame *client.StoppedFrame) {
-
 	fut := view.app.Debugger.GetStacktrace()
 
 	stacktrace := <-fut

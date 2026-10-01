@@ -43,7 +43,6 @@ func (gdb *GdbClient) GetRegisters() <-chan AsyncDecodedResult[[]Register] {
 	ch := make(chan AsyncDecodedResult[[]Register], 1)
 
 	go func() {
-
 		namesFut := SendDecodeAsync[GdbRegisterNamesPayload](gdb, "data-list-register-names")
 		valuesFut := SendDecodeAsync[GdbRegisterValuesPayload](gdb, "data-list-register-values", "x")
 

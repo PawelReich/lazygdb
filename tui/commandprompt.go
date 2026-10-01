@@ -3,6 +3,7 @@ package tui
 import (
 	"bytes"
 	"database/sql"
+	"fmt"
 	"log/slog"
 	"strings"
 	"sync"
@@ -12,8 +13,6 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-
-	"fmt"
 )
 
 const Prompt = "❯ "
@@ -148,7 +147,6 @@ func (view *CommandPrompt) ScrollHistory(direction int) {
 }
 
 func (view *CommandPrompt) Write(p []byte) (int, error) {
-
 	view.historyMutex.Lock()
 
 	sz, err := view.historyBuffer.Write(p)
