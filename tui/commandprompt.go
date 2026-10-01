@@ -1,10 +1,15 @@
 package tui
 
 import (
+	"bytes"
 	"database/sql"
+	"log/slog"
 	"strings"
+	"sync"
 
 	"github.com/PawelReich/lazygdb/client"
+	"github.com/PawelReich/lazygdb/internal"
+
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 
@@ -16,8 +21,11 @@ const Prompt = "❯ "
 type CommandPrompt struct {
 	Pane *tview.Flex
 
-	history *tview.TextView
-	input   *tview.InputField
+	history       *tview.TextView
+	historyBuffer bytes.Buffer
+	historyMutex  sync.Mutex
+
+	input *tview.InputField
 
 	app                 *LazyGdb
 	lastCommand         string
@@ -68,6 +76,10 @@ func NewCommandPrompt(app *LazyGdb) *CommandPrompt {
 		return event
 	})
 
+	handler := internal.NewSimpleSlogHandler(view, slog.LevelDebug)
+	logger := slog.New(handler)
+	slog.SetDefault(logger)
+
 	return view
 }
 
@@ -77,20 +89,10 @@ func (view *CommandPrompt) GetPane() tview.Primitive {
 	return view.Pane
 }
 
-func (view *CommandPrompt) LogColorf(color string, format string, args ...any) {
-	message := format
-	if len(args) > 0 {
-		message = fmt.Sprintf(format, args...)
-	}
-	fmt.Fprintf(view.history, "[%s]%s[-]\n", color, message)
-
-	view.history.ScrollToEnd()
-}
-
 func (view *CommandPrompt) sendCommand(command string) {
 	labelColor, _, _ := view.input.GetLabelStyle().Decompose()
 
-	fmt.Fprintf(view.history, "[%s::b]%s[white::B]%s\n", labelColor, Prompt, command)
+	fmt.Fprintf(view, "[%s::b]%s[white::B]%s\n", labelColor, Prompt, command)
 
 	if command[0] == '-' {
 		// Drop '-' as it is assumed in `SendAsync`
@@ -105,7 +107,7 @@ func (view *CommandPrompt) sendCommand(command string) {
 
 	} else {
 		res := <-view.app.Debugger.SendConsoleCommandAsync(command)
-		view.app.LogInfo(res.Result)
+		slog.Info(res.Result)
 	}
 }
 
@@ -143,4 +145,27 @@ func (view *CommandPrompt) ScrollHistory(direction int) {
 	}
 	view.input.SetText(command)
 	view.historyScrollOffset = offset
+}
+
+func (view *CommandPrompt) Write(p []byte) (int, error) {
+
+	view.historyMutex.Lock()
+
+	sz, err := view.historyBuffer.Write(p)
+
+	view.historyMutex.Unlock()
+
+	go view.app.Ui.QueueUpdateDraw(view.renderHistory)
+
+	return sz, err
+}
+
+func (view *CommandPrompt) renderHistory() {
+	view.historyMutex.Lock()
+
+	view.history.Write(view.historyBuffer.Bytes())
+	view.history.ScrollToEnd()
+	view.historyBuffer.Reset()
+
+	view.historyMutex.Unlock()
 }

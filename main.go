@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/PawelReich/lazygdb/client"
@@ -70,7 +72,7 @@ func main() {
 					idx := strings.Index(consoleLog, "\n")
 					log := consoleLog[:idx]
 					consoleLog = consoleLog[idx+1:]
-					app.LogInfo(log)
+					slog.Info(log)
 				}
 			case "error":
 				errorLog += notification["payload"].(string)
@@ -78,10 +80,10 @@ func main() {
 					idx := strings.Index(errorLog, "\n")
 					log := errorLog[:idx]
 					errorLog = errorLog[idx+1:]
-					app.LogError(log)
+					slog.Error(log)
 				}
 			default:
-				app.LogMap(notification)
+				slog.Info(fmt.Sprintf("%+v", notification))
 			}
 		}
 	}()
@@ -93,7 +95,7 @@ func main() {
 		case tcell.KeyCtrlC:
 			err := app.Debugger.Interrupt()
 			if err != nil {
-				app.LogErrorf("Error while interrupting: %s", err.Error())
+				slog.Error("Error while interrupting: " + err.Error())
 			}
 			return nil
 		case tcell.KeyTab:
