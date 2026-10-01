@@ -2,6 +2,7 @@ package main
 
 import (
 	"strings"
+	"log/slog"
 
 	"github.com/PawelReich/lazygdb/client"
 	"github.com/PawelReich/lazygdb/internal/db"
@@ -82,6 +83,7 @@ func main() {
 				}
 			default:
 				app.LogMap(notification)
+				slog.Info("hi:)")
 			}
 		}
 	}()

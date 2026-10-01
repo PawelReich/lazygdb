@@ -2,6 +2,7 @@ package tui
 
 import (
 	"database/sql"
+	"log/slog"
 	"strings"
 
 	"github.com/PawelReich/lazygdb/client"
@@ -67,6 +68,9 @@ func NewCommandPrompt(app *LazyGdb) *CommandPrompt {
 		return event
 	})
 
+	logger := slog.New(view.getSlogHandler())
+	slog.SetDefault(logger)
+
 	return view
 }
 
@@ -128,6 +132,7 @@ func (view *CommandPrompt) HandleCommand(command string) {
 	}
 	view.lastCommand = command
 	err := view.app.Db.InsertHistory(command)
+	slog.Info(command)
 	if err != nil {
 		panic(err)
 	}
@@ -144,4 +149,43 @@ func (view *CommandPrompt) ScrollHistory(direction int) {
 	}
 	view.input.SetText(command)
 	view.historyScrollOffset = offset
+}
+
+func (view *CommandPrompt) Write(p []byte) (int, error) {
+	b := make([]byte, len(p))
+	copy(b, p)
+
+		view.history.Write(b)
+		view.history.ScrollToEnd()
+	return len(p), nil
+}
+
+func (view *CommandPrompt) getSlogHandler() slog.Handler {
+	opts := &slog.HandlerOptions{
+		Level: slog.LevelDebug,
+		ReplaceAttr: func (_ []string, attr slog.Attr) slog.Attr {
+			if attr.Key == slog.LevelKey {
+				level := attr.Value.Any().(slog.Level)
+				var colorTag string
+				switch level {
+				case slog.LevelDebug:
+					colorTag = "gray"
+				case slog.LevelInfo:
+					colorTag = "green"
+				case slog.LevelWarn:
+					colorTag = "yellow"
+				case slog.LevelError:
+					colorTag = "red"
+				default:
+					colorTag = "white"
+				}
+
+				coloredLevel := fmt.Sprintf("[%s::b]%s[-]", colorTag, level.String())
+				attr.Value = slog.StringValue(coloredLevel)
+			}
+			return attr
+		},
+	}
+
+	return slog.NewTextHandler(view, opts)
 }
