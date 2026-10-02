@@ -9,7 +9,9 @@ import (
 )
 
 type LazyGdb struct {
-	Ui *tview.Application
+	Ui    *tview.Application
+	Pages *tview.Pages
+
 	Db *db.Db
 
 	CommandPrompt *CommandPrompt
@@ -28,6 +30,28 @@ type View struct {
 
 func NewView(app *LazyGdb) *View {
 	return &View{app: app}
+}
+
+func (app *LazyGdb) SetModal(modal tview.Primitive, width int, height int) {
+	if modal == nil {
+		app.Pages.RemovePage("modal")
+		return
+	}
+
+	height += 2 // Account for borders
+	width += 2  // Account for borders
+
+	wrapper := tview.NewFlex().
+		AddItem(nil, 0, 1, false).
+		AddItem(tview.NewFlex().
+			SetDirection(tview.FlexRow).
+			AddItem(nil, 0, 1, false).
+			AddItem(modal, height, 1, true).
+			AddItem(nil, 0, 1, false),
+			width, 1, true).
+		AddItem(nil, 0, 1, false)
+
+	app.Pages.AddPage("modal", wrapper, true, true)
 }
 
 type Updatable interface {

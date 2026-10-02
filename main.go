@@ -148,7 +148,10 @@ func main() {
 	}
 	commandWaitGroup.Wait()
 
-	err = app.Ui.SetRoot(grid, true).SetFocus(commandPrompt.Pane).Run()
+	app.Pages = tview.NewPages().
+		AddPage("main", grid, true, true)
+
+	err = app.Ui.SetRoot(app.Pages, true).SetFocus(commandPrompt.Pane).Run()
 	if err != nil {
 		panic(err)
 	}
