@@ -81,7 +81,8 @@ func main() {
 					errorLog = errorLog[idx+1:]
 					slog.Error(log)
 				}
-			default:
+			}
+			if app.EnableGdbNotificationLogging {
 				slog.Info(fmt.Sprintf("%+v", notification))
 			}
 		}
@@ -140,7 +141,9 @@ func main() {
 
 	var commands []string
 	pflag.StringArrayVarP(&commands, "ex", "e", nil, "Commands to execute")
+	debugGdb := pflag.Bool("debuggdb", false, "Show GDB notifications")
 	pflag.Parse()
+	app.EnableGdbNotificationLogging = *debugGdb
 
 	go func() {
 		for _, command := range commands {

@@ -27,6 +27,7 @@ go build -o lazygdb .
 
 ### Supported flags
 * `-e`/`--ex` (repeatable) allows to run commands on startup
+* `--debuggdb` enables GDB notification printing
 
 ## Features
  * Source view _with syntax highlighting_

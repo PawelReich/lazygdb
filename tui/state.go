@@ -18,6 +18,8 @@ type LazyGdb struct {
 	Views []Updatable
 
 	SourceView *SourceView
+
+	EnableGdbNotificationLogging bool
 }
 
 type View struct {
