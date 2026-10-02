@@ -42,5 +42,6 @@ Use `-e`/`--ex` (repeatable) to run console commands on startup.
 | `Ctrl-Q`  | Quit                            |
 | `Ctrl-C`  | Interrupt the running program    |
 | `Tab`     | Move focus to the next pane     |
+| `Shift-Tab`| Move focus to the previous pane     |
 | `Up/Down` | Scroll command history
 

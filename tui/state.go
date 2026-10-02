@@ -33,12 +33,15 @@ type Updatable interface {
 	Update(*client.StoppedFrame)
 }
 
-func (app *LazyGdb) CycleFocus() {
+func (app *LazyGdb) CycleFocus(direction int) {
 	for i, view := range app.Views {
 		if !view.GetPane().HasFocus() {
 			continue
 		}
-		nextView := (i + 1) % len(app.Views)
+		nextView := (i + direction) % len(app.Views)
+		if nextView == -1 {
+			nextView = len(app.Views) - 1
+		}
 		app.Ui.SetFocus(app.Views[nextView].GetPane())
 		return
 	}

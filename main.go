@@ -98,9 +98,11 @@ func main() {
 			}
 			return nil
 		case tcell.KeyTab:
-			app.CycleFocus()
+			app.CycleFocus(1)
 			return nil
-
+		case tcell.KeyBacktab:
+			app.CycleFocus(-1)
+			return nil
 		}
 
 		return event
