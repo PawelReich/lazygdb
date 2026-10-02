@@ -43,7 +43,7 @@ func (view *RegistersView) Update(frame *client.StoppedFrame) {
 			modifier = "red::b"
 		}
 
-		sym := <-view.app.Debugger.GetSymbol("$" + reg.Name)
+		sym := <-view.app.Debugger.GetCachedSymbol(reg.Value)
 
 		nameCell := tview.NewTableCell(fmt.Sprintf("[%s]%s[-]", modifier, reg.Name)).
 			SetTextColor(tcell.ColorYellow).
