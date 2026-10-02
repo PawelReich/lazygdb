@@ -25,7 +25,8 @@ go build -o lazygdb .
 ./lazygdb --ex "break main" --ex "target remote :3333"
 ```
 
-Use `-e`/`--ex` (repeatable) to run console commands on startup.
+### Supported flags
+* `-e`/`--ex` (repeatable) allows to run commands on startup
 
 ## Features
  * Source view _with syntax highlighting_
