@@ -86,8 +86,8 @@ func (gdb *GdbClient) GetRegisters() <-chan AsyncDecodedResult[[]Register] {
 func (gdb *GdbClient) GetCachedSymbol(sym string) <-chan AsyncDecodedResult[string] {
 	ch := make(chan AsyncDecodedResult[string], 1)
 
-	if resolvedSymbol, ok := gdb.symbolLookup[sym]; ok {
-		ch <- AsyncDecodedResult[string]{Result: resolvedSymbol}
+	if resolvedSymbol, ok := gdb.symbolLookup.Load(sym); ok {
+		ch <- AsyncDecodedResult[string]{Result: resolvedSymbol.(string)}
 		close(ch)
 		return ch
 	}
@@ -97,7 +97,7 @@ func (gdb *GdbClient) GetCachedSymbol(sym string) <-chan AsyncDecodedResult[stri
 
 		res := <-gdb.GetSymbol(sym)
 		if res.Error == nil {
-			gdb.symbolLookup[sym] = res.Result
+			gdb.symbolLookup.Store(sym, res.Result)
 		}
 		ch <- res
 	}()

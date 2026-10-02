@@ -27,7 +27,7 @@ type GdbClient struct {
 	consoleCaptureMutex sync.Mutex
 	consoleCaptured     *strings.Builder
 
-	symbolLookup map[string]string
+	symbolLookup sync.Map
 
 	notifications chan map[string]any
 }
@@ -35,7 +35,6 @@ type GdbClient struct {
 func New() (*GdbClient, error) {
 	gdbClient := &GdbClient{
 		notifications: make(chan map[string]any, 512),
-		symbolLookup:  make(map[string]string),
 	}
 
 	gdb, err := gdb.New(gdbClient.handleNotifications)
