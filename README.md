@@ -19,7 +19,7 @@ Heavily inspired by other existing GDB dashboards like [pwndbg](https://github.c
 go build -o lazygdb .
 ```
 
-## Run
+## Usage
 
 ```sh
 ./lazygdb --ex "break main" --ex "target remote :3333"
