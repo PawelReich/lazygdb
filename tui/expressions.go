@@ -127,6 +127,7 @@ func (view *ExpressionsView) addExpressionModal() tview.Primitive {
 	modal.SetTitle("Enter new expression")
 	modal.SetBorder(true)
 	modal.SetDirection(tview.FlexRow)
+	modal.SetBackgroundColor(tcell.ColorOlive)
 
 	input := tview.NewInputField()
 	input.SetFieldBackgroundColor(tcell.ColorBlack)
