@@ -116,7 +116,7 @@ func main() {
 
 	grid := tview.NewGrid()
 	grid.SetRows(0, 0, 20)
-	grid.SetColumns(0, 0, 0, 0)
+	grid.SetColumns(-1, -2, -2, -2)
 
 	// Code View (Top Left)
 	// Starts at row 0, column 0. Spans 2 rows, 2 columns
