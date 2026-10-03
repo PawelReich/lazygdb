@@ -20,6 +20,9 @@ func NewDisassemblyView(app *LazyGdb) *DisassemblyView {
 }
 
 func (view *DisassemblyView) Update(frame *client.StoppedFrame) {
+	if frame == nil {
+		return
+	}
 	fut := view.app.Debugger.DisassembleAroundPC(256)
 	disas := <-fut
 	if disas.Error != nil {
