@@ -41,11 +41,15 @@ func NewWatchView(app *LazyGdb) *ExpressionsView {
 
 	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Rune() == 'n' {
-			view.app.SetModal(view.addExpressionModal(), 50, 1)
+			view.app.SetModal(view.addExpressionModal(""), 50, 1)
 			return nil
 		}
 		if event.Rune() == 'd' {
 			view.removeExpression(view.Pane.GetCurrentItem())
+		}
+		if event.Rune() == 'r' {
+			expr := view.expressions[view.Pane.GetCurrentItem()]
+			view.app.SetModal(view.addExpressionModal(expr), 50, 1)
 		}
 
 		return event
@@ -122,17 +126,26 @@ func (view *ExpressionsView) GetPane() tview.Primitive {
 	return view.Pane
 }
 
-func (view *ExpressionsView) addExpressionModal() tview.Primitive {
+func (view *ExpressionsView) addExpressionModal(expr string) tview.Primitive {
 	modal := tview.NewFlex()
-	modal.SetTitle("Enter new expression")
+	if expr == "" {
+		modal.SetTitle("Enter new expression")
+	} else {
+		modal.SetTitle("Change expression")
+	}
 	modal.SetBorder(true)
 	modal.SetDirection(tview.FlexRow)
-	modal.SetBackgroundColor(tcell.ColorOlive)
+	modal.SetBackgroundColor(tcell.ColorOliveDrab)
 
 	input := tview.NewInputField()
+	input.SetText(expr)
 	input.SetFieldBackgroundColor(tcell.ColorBlack)
 	input.SetDoneFunc(func(key tcell.Key) {
 		view.app.SetModal(nil, 0, 0)
+
+		if expr != "" {
+			view.removeExpression(view.Pane.GetCurrentItem())
+		}
 
 		view.AddExpression(input.GetText())
 	})
