@@ -23,7 +23,7 @@ func NewRegistersView(app *LazyGdb) *RegistersView {
 	return &RegistersView{View: NewView(app), Pane: textView}
 }
 
-func (view *RegistersView) Update(frame *client.StoppedFrame) {
+func (view *RegistersView) Update(_ *client.StoppedFrame) {
 	registers := <-view.app.Debugger.GetRegisters()
 
 	if registers.Error != nil {

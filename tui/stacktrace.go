@@ -44,7 +44,7 @@ func NewStacktraceView(app *LazyGdb) *StacktraceView {
 	return view
 }
 
-func (view *StacktraceView) Update(frame *client.StoppedFrame) {
+func (view *StacktraceView) Update(_ *client.StoppedFrame) {
 	fut := view.app.Debugger.GetStacktrace()
 
 	stacktrace := <-fut
