@@ -115,11 +115,11 @@ func main() {
 	grid.SetColumns(0, 0, 0)
 
 	// Code View (Top Left)
-	// Starts at row 0, column 1. Spans 2 rows, 2 columns
+	// Starts at row 0, column 0. Spans 2 rows, 2 columns
 	grid.AddItem(codeView.Pane, 0, 0, 2, 2, 0, 0, false)
 
 	// Command Prompt (Bottom Left)
-	// Starts at row 2, column 1. Spans 1 row, 2 columns.
+	// Starts at row 2, column 0. Spans 1 row, 2 columns.
 	grid.AddItem(commandPrompt.Pane, 2, 0, 1, 2, 0, 0, true)
 
 	// Disassembly (Top Right)
