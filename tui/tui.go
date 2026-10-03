@@ -9,17 +9,16 @@ import (
 )
 
 type LazyGdb struct {
+	Debugger *client.GdbClient
+	Db       *db.Db
+
 	Ui    *tview.Application
 	Pages *tview.Pages
 
-	Db *db.Db
-
 	CommandPrompt *CommandPrompt
-	Debugger      *client.GdbClient
+	SourceView    *SourceView
 
 	Views []Updatable
-
-	SourceView *SourceView
 
 	EnableGdbNotificationLogging bool
 }
