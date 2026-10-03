@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"sync"
 
@@ -43,6 +44,10 @@ func NewWatchView(app *LazyGdb) *ExpressionsView {
 			view.app.SetModal(view.addExpressionModal(), 20, 1)
 			return nil
 		}
+		if event.Rune() == 'd' {
+			view.removeExpression(view.Pane.GetCurrentItem())
+		}
+
 		return event
 	})
 
@@ -141,3 +146,9 @@ func (view *ExpressionsView) AddExpression(expr string) {
 	view.renderExpressions(nil)
 }
 
+func (view *ExpressionsView) removeExpression(index int) {
+	view.expressions = slices.Delete(view.expressions, index, index+1)
+	view.expressionResults = slices.Delete(view.expressionResults, index, index+1)
+
+	view.renderExpressions(nil)
+}
