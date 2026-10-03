@@ -2,6 +2,8 @@ package tui
 
 import (
 	"fmt"
+	"log/slog"
+	"regexp"
 
 	"github.com/PawelReich/lazygdb/client"
 	"github.com/gdamore/tcell/v2"
@@ -10,9 +12,10 @@ import (
 
 type RegistersView struct {
 	*View
+	Pane *tview.Table
 
-	Pane         *tview.Table
-	oldRegisters []client.Register
+	ignoreRegisterRegexes []*regexp.Regexp
+	oldRegisters          []client.Register
 }
 
 func NewRegistersView(app *LazyGdb) *RegistersView {
@@ -33,7 +36,18 @@ func (view *RegistersView) Update(_ *client.StoppedFrame) {
 
 	_, _, _, height := view.Pane.GetInnerRect()
 
-	for i, reg := range registers.Result {
+	i := 0
+	for _, reg := range registers.Result {
+		ignoreRegister := false
+		for _, ignoreRegex := range view.ignoreRegisterRegexes {
+			if ignoreRegex.MatchString(reg.Name) {
+				ignoreRegister = true
+			}
+		}
+		if ignoreRegister {
+			continue
+		}
+
 		row := i % height
 		colGroup := i / height
 		colOffset := colGroup * 2 // 2 columns per register (Name, Value)
@@ -56,6 +70,8 @@ func (view *RegistersView) Update(_ *client.StoppedFrame) {
 		view.Pane.SetCell(row, colOffset, nameCell)
 		view.Pane.SetCell(row, colOffset+1, valueCell)
 
+		// Separate since ignored registers should not create gaps in the table
+		i += 1
 	}
 
 	view.oldRegisters = registers.Result
@@ -63,4 +79,15 @@ func (view *RegistersView) Update(_ *client.StoppedFrame) {
 
 func (view *RegistersView) GetPane() tview.Primitive {
 	return view.Pane
+}
+
+func (view *RegistersView) IgnoreRegisterRegex(reg string) {
+	regex, err := regexp.Compile(reg)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Invalid regex: %s", reg))
+		return
+	}
+
+	view.ignoreRegisterRegexes = append(view.ignoreRegisterRegexes, regex)
+	slog.Info(fmt.Sprintf("Ignoring registers matching regex: %v", regex))
 }

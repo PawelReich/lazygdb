@@ -148,6 +148,9 @@ func main() {
 	var expressions []string
 	pflag.StringArrayVarP(&expressions, "expr", "x", nil, "Expressions to add on launch")
 
+	var ignoreRegisterRegexes []string
+	pflag.StringArrayVarP(&ignoreRegisterRegexes, "ignoreregister", "", nil, "Ignore registers matching regex")
+
 	debugGdb := pflag.Bool("debuggdb", false, "Show GDB notifications")
 
 	pflag.Parse()
@@ -155,6 +158,10 @@ func main() {
 
 	for _, expr := range expressions {
 		app.ExpressionsView.AddExpression(expr)
+	}
+
+	for _, regex := range ignoreRegisterRegexes {
+		registersView.IgnoreRegisterRegex(regex)
 	}
 
 	var commandWaitGroup sync.WaitGroup
