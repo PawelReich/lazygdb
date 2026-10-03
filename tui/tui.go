@@ -50,15 +50,15 @@ func (app *LazyGdb) CycleFocus(direction int) {
 }
 
 func (app *LazyGdb) UpdateViews(frame *client.StoppedFrame) {
+	var wg sync.WaitGroup
+
+	for _, view := range app.Views {
+		wg.Go(func() {
+			view.Update(frame)
+		})
+	}
+
+	wg.Wait()
 	app.Ui.QueueUpdateDraw(func() {
-		var wg sync.WaitGroup
-
-		for _, view := range app.Views {
-			wg.Go(func() {
-				view.Update(frame)
-			})
-		}
-
-		wg.Wait()
 	})
 }
