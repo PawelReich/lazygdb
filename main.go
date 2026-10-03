@@ -144,9 +144,18 @@ func main() {
 
 	var commands []string
 	pflag.StringArrayVarP(&commands, "ex", "e", nil, "Commands to execute on launch")
+
+	var expressions []string
+	pflag.StringArrayVarP(&expressions, "expr", "x", nil, "Expressions to add on launch")
+
 	debugGdb := pflag.Bool("debuggdb", false, "Show GDB notifications")
+
 	pflag.Parse()
 	app.EnableGdbNotificationLogging = *debugGdb
+
+	for _, expr := range expressions {
+		app.ExpressionsView.AddExpression(expr)
+	}
 
 	var commandWaitGroup sync.WaitGroup
 	for _, command := range commands {
