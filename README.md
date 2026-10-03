@@ -22,11 +22,12 @@ go build -o lazygdb .
 ## Usage
 
 ```sh
-./lazygdb --ex "break main" --ex "target remote :3333"
+./lazygdb --ex "break main" --ex "target remote :3333" --expr "p/x *0xE000ED24"
 ```
 
 ### Supported flags
 * `-e`/`--ex` (repeatable) allows to run commands on startup
+* `-x`/`--expr` (repeatable) allows to add expressions on startup
 * `--debuggdb` enables GDB notification printing
 
 ## Features
