@@ -15,8 +15,8 @@ type ExpressionsView struct {
 
 	Pane *tview.List
 
-	expressions []string
-	oldResults  []string
+	expressions       []string
+	expressionResults []string
 }
 
 func NewWatchView(app *LazyGdb) *ExpressionsView {
@@ -50,33 +50,45 @@ func NewWatchView(app *LazyGdb) *ExpressionsView {
 }
 
 func (view *ExpressionsView) Update(_ *client.StoppedFrame) {
-	view.updateExpressions(true)
+	view.updateExpressions()
 }
 
-func (view *ExpressionsView) updateExpressions(markChanged bool) {
+func (view *ExpressionsView) updateExpressions() {
 	var wg sync.WaitGroup
 
 	results := make([]string, len(view.expressions))
 
 	for i, expr := range view.expressions {
 		wg.Go(func() {
-			res := <-view.app.Debugger.SendConsoleCommandAsync(expr)
-			if res.Error != nil {
-				results[i] = res.Error.Error()
-			} else {
-				var result string
-				if res.Result != "" {
-					result = res.Result[strings.Index(res.Result, " = ")+3:]
-				} else {
-					result = "Error while evaluating"
-				}
-				results[i] = result
-			}
+			results[i] = view.evaluateExpression(expr)
 		})
 	}
 
 	wg.Wait()
+	oldResults := view.expressionResults
+	view.expressionResults = results
 
+	view.renderExpressions(oldResults)
+	view.expressionResults = results
+}
+
+func (view *ExpressionsView) evaluateExpression(expr string) string {
+	res := <-view.app.Debugger.SendConsoleCommandAsync(expr)
+
+	var result string
+	if res.Error != nil {
+		result = res.Error.Error()
+	} else {
+		if res.Result != "" {
+			result = res.Result[strings.Index(res.Result, " = ")+3:]
+		} else {
+			result = "Error while evaluating"
+		}
+	}
+	return result
+}
+
+func (view *ExpressionsView) renderExpressions(oldResults []string) {
 	view.Pane.Clear()
 
 	longestExpression := 0
@@ -88,19 +100,16 @@ func (view *ExpressionsView) updateExpressions(markChanged bool) {
 
 	for i, expr := range view.expressions {
 		expr = tview.Escape(expr)
-		result := tview.Escape(results[i])
+		result := tview.Escape(view.expressionResults[i])
 
-		modifier := "::"
-		if markChanged && i < len(view.oldResults) && view.oldResults[i] != result {
+		modifier := "yellow::"
+		if oldResults != nil && oldResults[i] != result {
 			modifier = "red::b"
 		}
 
 		formattedResult := fmt.Sprintf("[%s]%-*s[-] │ %s", modifier, longestExpression, expr, result)
 
 		view.Pane.AddItem(formattedResult, "", 0, nil)
-	}
-	if markChanged {
-		view.oldResults = results
 	}
 }
 
@@ -118,8 +127,8 @@ func (view *ExpressionsView) addExpressionModal() tview.Primitive {
 	input.SetFieldBackgroundColor(tcell.ColorBlack)
 	input.SetDoneFunc(func(key tcell.Key) {
 		view.app.SetModal(nil, 0, 0)
-		view.expressions = append(view.expressions, input.GetText())
-		view.updateExpressions(false)
+
+		view.AddExpression(input.GetText())
 	})
 	modal.AddItem(input, 0, 1, true)
 	return modal
@@ -127,4 +136,8 @@ func (view *ExpressionsView) addExpressionModal() tview.Primitive {
 
 func (view *ExpressionsView) AddExpression(expr string) {
 	view.expressions = append(view.expressions, expr)
+	view.expressionResults = append(view.expressionResults, view.evaluateExpression(expr))
+
+	view.renderExpressions(nil)
 }
+
