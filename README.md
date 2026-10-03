@@ -43,8 +43,12 @@ go build -o lazygdb .
 | Key       | Action                          |
 | --------- | ------------------------------- |
 | `Ctrl-Q`  | Quit                            |
-| `Ctrl-C`  | Interrupt the running program    |
+| `Ctrl-C`  | Interrupt the running program   |
 | `Tab`     | Move focus to the next pane     |
-| `Shift-Tab`| Move focus to the previous pane     |
-| `Up/Down` | Scroll command history
+| `Shift-Tab`| Move focus to the previous pane|
+| `Up/Down` | Scroll command history          |
+| `n` | (Expressions) Add expression       |
+| `d` | (Expressions) Remove expression       |
+| `r` | (Expressions) Change expression       |
+
 
