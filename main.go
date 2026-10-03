@@ -141,7 +141,7 @@ func main() {
 	grid.AddItem(stacktraceView.Pane, 2, 2, 1, 1, 0, 0, false)
 
 	var commands []string
-	pflag.StringArrayVarP(&commands, "ex", "e", nil, "Commands to execute")
+	pflag.StringArrayVarP(&commands, "ex", "e", nil, "Commands to execute on launch")
 	debugGdb := pflag.Bool("debuggdb", false, "Show GDB notifications")
 	pflag.Parse()
 	app.EnableGdbNotificationLogging = *debugGdb
