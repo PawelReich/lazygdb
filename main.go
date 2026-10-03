@@ -168,7 +168,7 @@ func main() {
 	app.Pages = tview.NewPages().
 		AddPage("main", grid, true, true)
 
-	err = app.Ui.SetRoot(app.Pages, true).SetFocus(commandPrompt.Pane).Run()
+	err = app.Ui.SetRoot(app.Pages, true).EnableMouse(true).SetFocus(commandPrompt.Pane).Run()
 	if err != nil {
 		panic(err)
 	}
