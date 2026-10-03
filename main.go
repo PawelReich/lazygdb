@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"sync"
 
 	"github.com/PawelReich/lazygdb/client"
 	"github.com/PawelReich/lazygdb/internal/db"
@@ -145,11 +146,13 @@ func main() {
 	pflag.Parse()
 	app.EnableGdbNotificationLogging = *debugGdb
 
-	go func() {
-		for _, command := range commands {
+	var commandWaitGroup sync.WaitGroup
+	for _, command := range commands {
+		commandWaitGroup.Go(func() {
 			commandPrompt.HandleCommand(command)
-		}
-	}()
+		})
+	}
+	commandWaitGroup.Wait()
 
 	err = app.Ui.SetRoot(grid, true).SetFocus(commandPrompt.Pane).Run()
 	if err != nil {
