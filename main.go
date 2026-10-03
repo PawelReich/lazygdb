@@ -46,6 +46,10 @@ func main() {
 	stacktraceView := tui.NewStacktraceView(app)
 	app.Views = append(app.Views, stacktraceView)
 
+	expressionsView := tui.NewWatchView(app)
+	app.Views = append(app.Views, expressionsView)
+	app.ExpressionsView = expressionsView
+
 	go func() {
 		var errorLog string
 		var consoleLog string
@@ -112,7 +116,7 @@ func main() {
 
 	grid := tview.NewGrid()
 	grid.SetRows(0, 0, 20)
-	grid.SetColumns(0, 0, 0)
+	grid.SetColumns(0, 0, 0, 0)
 
 	// Code View (Top Left)
 	// Starts at row 0, column 0. Spans 2 rows, 2 columns
@@ -123,16 +127,20 @@ func main() {
 	grid.AddItem(commandPrompt.Pane, 2, 0, 1, 2, 0, 0, true)
 
 	// Disassembly (Top Right)
-	// Starts at row 0, column 2. Spans 1 row, 1 column.
-	grid.AddItem(diassemblyView.Pane, 0, 2, 1, 1, 0, 0, false)
+	// Starts at row 0, column 2. Spans 1 row, 2 columns.
+	grid.AddItem(diassemblyView.Pane, 0, 2, 1, 2, 0, 0, false)
 
 	// Registers (Middle Right)
 	// Starts at row 1, column 2. Spans 1 row, 1 column.
 	grid.AddItem(registersView.Pane, 1, 2, 1, 1, 0, 0, false)
 
 	// Stacktrace (Bottom Mid-Right)
-	// Starts at row 2, column 2. Spans 1 row, 1 column.
-	grid.AddItem(stacktraceView.Pane, 2, 2, 1, 1, 0, 0, false)
+	// Starts at row 2, column 2. Spans 1 row, 2 columns.
+	grid.AddItem(stacktraceView.Pane, 2, 2, 1, 2, 0, 0, false)
+
+	// Expressions (Right Middle)
+	// Starts at row 2, column 3. Spans 1 row, 1 column.
+	grid.AddItem(expressionsView.Pane, 1, 3, 1, 1, 0, 0, false)
 
 	var commands []string
 	pflag.StringArrayVarP(&commands, "ex", "e", nil, "Commands to execute on launch")

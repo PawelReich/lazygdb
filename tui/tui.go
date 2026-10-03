@@ -15,8 +15,9 @@ type LazyGdb struct {
 	Ui    *tview.Application
 	Pages *tview.Pages
 
-	CommandPrompt *CommandPrompt
-	SourceView    *SourceView
+	CommandPrompt   *CommandPrompt
+	SourceView      *SourceView
+	ExpressionsView *ExpressionsView
 
 	Views []Updatable
 
