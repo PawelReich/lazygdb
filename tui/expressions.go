@@ -41,7 +41,7 @@ func NewWatchView(app *LazyGdb) *ExpressionsView {
 
 	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Rune() == 'n' {
-			view.app.SetModal(view.addExpressionModal(), 20, 1)
+			view.app.SetModal(view.addExpressionModal(), 50, 1)
 			return nil
 		}
 		if event.Rune() == 'd' {
